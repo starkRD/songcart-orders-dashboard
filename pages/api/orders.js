@@ -24,26 +24,33 @@ export default async function handler(req, res) {
     });
     const { orders: batch = [] } = await response.json();
     orders.push(...batch);
-
     const link = response.headers.get('link') || '';
-    const match = link.match(/<([^>]+)>; rel="next"/);
-    nextPage = match ? match[1] : null;
+    const m = link.match(/<([^>]+)>; rel="next"/);
+    nextPage = m ? m[1] : null;
   }
 
   // Tally counts by Language & Plan
   const tally = {};
   for (const order of orders) {
     for (const li of order.line_items) {
+      // collect properties into an object
       const props = Object.fromEntries(
         (li.properties || []).map(p => [p.name, p.value])
       );
 
+      // filter by language
       if (language !== 'All' && props.Language !== language) continue;
-      if (plan     !== 'All' && props.Plan     !== plan)     continue;
+
+      // determine planKey from whichever exists
+      const planKey =
+        props.Plan ||
+        props['Song Type'] ||
+        li.variant_title ||
+        'Unknown';
+
+      if (plan !== 'All' && planKey !== plan) continue;
 
       const langKey = props.Language || 'Unknown';
-      const planKey = props.Plan     || 'Unknown';
-
       tally[langKey] = tally[langKey] || {};
       tally[langKey][planKey] = (tally[langKey][planKey] || 0) + 1;
     }
