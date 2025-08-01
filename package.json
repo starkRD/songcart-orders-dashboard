@@ -1,0 +1,16 @@
+{
+  "name": "songcart-orders-dashboard",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {
+    "next": "13.5.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "node-fetch": "3.4.2",
+    "react-datepicker": "4.16.0"
+  }
+}
